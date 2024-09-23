@@ -7,7 +7,6 @@ public class DrawBridge : MonoBehaviour
     private float offAngle = -90;
     private float onAngle = 0;
     private bool isActivated = false;
-    private Quaternion startRotation;
     private Quaternion targetRotation;
     private float currentAngle;
     private float toggleSpeed = .5f;

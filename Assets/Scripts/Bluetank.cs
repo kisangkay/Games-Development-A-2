@@ -196,9 +196,6 @@ public class Bluetank : MonoBehaviour
                     }
                 
             }
-
-
-
             }
 
 
@@ -228,7 +225,7 @@ public class Bluetank : MonoBehaviour
             rb.isKinematic = true; // Disable physics while holding
         }
     }
-
+ 
     void Die()
     {
         if (explosionPrefab)

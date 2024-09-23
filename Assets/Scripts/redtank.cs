@@ -98,7 +98,7 @@ public class redtank : MonoBehaviour
         GetComponent<Rigidbody>().velocity = Vector3.zero;
 
         // Fire bullets at regular intervals if the player is visible
-        if (CanSeePlayer())
+        if (raycasttoplayer())
         {
             RotateTurret(playerTransform.position);
             if (Time.time > nextFireTime)
@@ -127,7 +127,7 @@ public class redtank : MonoBehaviour
     void UpdatePatrolState()
     {
         // visibility of the player
-        if (CanSeePlayer())
+        if (raycasttoplayer())
         {
             curState = redtankstate.Attack; 
             return;
@@ -193,17 +193,34 @@ public class redtank : MonoBehaviour
         turret.transform.rotation = Quaternion.Slerp(turret.transform.rotation, turretRotation, Time.deltaTime * turretRotationSpeed);
     }
 
-    bool CanSeePlayer()
-    {
-        Vector3 directionToPlayer = playerTransform.position - transform.position;
+    // bool raycasttoplayer()
+    // {
+    //     Vector3 directionToPlayer = playerTransform.position - transform.position;
 
-        // Check if there's a clear line of sight
-        if (!Physics.Raycast(transform.position, directionToPlayer.normalized, directionToPlayer.magnitude, lineOfSightMask))
+    //     // Check if there's a clear line of sight
+    //     if (!Physics.Raycast(transform.position, directionToPlayer.normalized, directionToPlayer.magnitude, lineOfSightMask))
+    //     {
+    //         return true;
+    //     }
+
+    //     return false;
+    // }
+    bool raycasttoplayer()//looked up raycasthit to filter what raycast is hitting as raycast alone isnt enough to check
+{
+    Vector3 directionToPlayer = playerTransform.position - transform.position;
+    RaycastHit hitInfo;
+    if (Physics.Raycast(transform.position, directionToPlayer.normalized, out hitInfo, directionToPlayer.magnitude, lineOfSightMask))
+    {
+        //ignore these 2
+        if (hitInfo.collider.CompareTag("YellowTank") || hitInfo.collider.CompareTag("EnemyTank"))
         {
             return true;
         }
-
         return false;
     }
+    return true;
+}
+
+
     
 }

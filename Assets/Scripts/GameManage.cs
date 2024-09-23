@@ -6,35 +6,41 @@ public class GameManager : MonoBehaviour
 {
     public int carriedkeys = 0;
     public int totalKeys = 4;
-    public float timeLimit = 300f; // 5 minutes
+    private float timeLimit = 300f; //5 mins
     private float timer;
     private GameObject carriedkey;
+    public GameObject player;
+    public OpenExit exitgate;
+    public bool startedcountdown;
 
     void Start()
     {
-        timer = timeLimit;
+        timer = timeLimit;  // Reset the timer
+        startedcountdown=false;
+        Debug.Log("Timer is: " + timer + " seconds");
     }
 
     void Update()
     {
-        timer -= Time.deltaTime;
-
-        if (carriedkeys == totalKeys)
+        if (startedcountdown == true)
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Leaderboard");
+            timer -= Time.deltaTime;
+            if (timer <= 0)
+            {
+                timer =0;//was going to negative
+                gameover();
+            }
         }
-
-        if (timer <= 0)//5mins run out,
-        {
-            //gameover image, button to main menu
-            gameover();
-        }
+    }
+    public void startcountdown(){
+        //start timer
+        startedcountdown = true;  // Start the countdown
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Redkey") || other.CompareTag("Bluekey") || other.CompareTag("Greenkey")
-        || other.CompareTag("Yellowkey") && carriedkey == null)
+        || other.CompareTag("Yellowkey"))
         {
             Pickupkeys(other.gameObject);
         }
@@ -43,19 +49,19 @@ public class GameManager : MonoBehaviour
 
     void gameover()
     {
-        Debug.Log("Game Over! Time's up!");//show ui and button for main menu/restarting
+        Debug.Log("Game Over! You ran out of time!");//show ui and button for main menu/restarting
+        // UnityEngine.SceneManagement.SceneManager.LoadScene("Leaderboard");
     }
-
+    
     void Pickupkeys(GameObject obj)
     {
-        // Rigidbody rb = obj.GetComponent<Rigidbody>();
-        // if (rb != null)
-        // {
-        //     rb.isKinematic = true; // Disable physics while holding
-        // }
-
         carriedkeys++;
         Destroy(obj);
         Debug.Log("Picked up a key, total keys = "+ carriedkeys);
+
+        if (carriedkeys ==4)//Open the gate
+    {
+        exitgate.ToggleExit();
+    }
     }
 }

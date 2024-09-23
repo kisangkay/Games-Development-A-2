@@ -16,14 +16,15 @@ public class PlayerMovement : MonoBehaviour
     public float health = 100f;
     public float mouseSensitivity = 100f;
     private float verticalLookRotation = 0f;
-     private Transform cameraTarget;
-     private Rigidbody _rigidbody;
-     
-        public LayerMask groundMask;
+    private Transform cameraTarget;
+    private Rigidbody _rigidbody;
+
+    public LayerMask groundMask;
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     private bool isGrounded;
     private Vector3 velocity;
+    public GameManager gamemanager;
 
     void Start()
     {
@@ -35,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
         // Get Rigidbody component
         _rigidbody = GetComponent<Rigidbody>();
 
-  
+
 
 
     }
@@ -51,43 +52,60 @@ public class PlayerMovement : MonoBehaviour
         UpdateFOV();
         isGrounded = CheckGround();
 
-        
-        if(health <= 0)
+
+        if (health <= 0)
         {
             Die();
         }
-        
+
     }
     bool CheckGround()
-{
-    // Perform a Raycast downwards from the player's position
-    return Physics.Raycast(groundCheck.position, Vector3.down, groundDistance, groundMask);
-}
+    {
+        // Perform a Raycast downwards from the player's position
+        return Physics.Raycast(groundCheck.position, Vector3.down, groundDistance, groundMask);
+    }
+    void OnTriggerEnter(Collider other) //won if step on green cube
+    {
+        if (other.CompareTag("Enterarenasensor"))
+        {
+            Debug.Log("You entered arena, countdown started");
+            gamemanager.startcountdown();
+        }
+        else if(other.CompareTag("Exitmat"))
+        {
+            gamewon();
+        }
+    }
+    void gamewon()
+    {
+        Debug.Log("Won!");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Leaderboard");
+    }
 
     void UpdateMovement()
     {
-         float moveX = Input.GetAxis("Horizontal");
-    float moveZ = Input.GetAxis("Vertical");
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
 
-    Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        Vector3 move = transform.right * moveX + transform.forward * moveZ;
 
-    // Handle sprinting
-    bool isSprinting = Input.GetKey(KeyCode.LeftShift) && (Input.GetAxis("Vertical") > 0);
-    float currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
+        // Handle sprinting
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift) && (Input.GetAxis("Vertical") > 0);
+        float currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
 
-    // Move the player
-    Vector3 targetPosition = _rigidbody.position + move * currentSpeed * Time.deltaTime;
-    _rigidbody.MovePosition(targetPosition);
+        // Move the player
+        Vector3 targetPosition = _rigidbody.position + move * currentSpeed * Time.deltaTime;
+        _rigidbody.MovePosition(targetPosition);
 
-    // Apply gravity
-    _rigidbody.velocity += Vector3.up * gravity * Time.deltaTime;
-        
+        // Apply gravity
+        _rigidbody.velocity += Vector3.up * gravity * Time.deltaTime;
+
 
     }
 
     void UpdateMouseLook()
     {
-         if (cameraTarget == null)
+        if (cameraTarget == null)
             return;
 
         // Get mouse input
@@ -115,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateJump()
     {
-         if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
@@ -135,13 +153,13 @@ public class PlayerMovement : MonoBehaviour
     public void ApplyDamage(int damage)
     {
         health -= damage;
-        Debug.Log("Hit You for "+ damage+"health left "+health);
+        Debug.Log("Hit You for " + damage + "health left " + health);
         if (health <= 0)
         {
             Die();
         }
     }
-     void Die()
+    void Die()
     {
         // Disable the player and to show gameover menu to scene menu
         gameObject.SetActive(false);

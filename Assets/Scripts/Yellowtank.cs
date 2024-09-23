@@ -119,7 +119,6 @@ public class yellowtank : MonoBehaviour
         Debug.Log(nav.stoppingDistance);
         if (Vector3.Distance(startPos, targetPos) <= stopDistance)
         {
-            // If the tank is within the stop distance of the current waypoint, move to the next one
             currentWaypointIndex++;
             }
         else
