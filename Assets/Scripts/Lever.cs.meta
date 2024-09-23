@@ -3,7 +3,14 @@ guid: 53d68e9bf296f27489eb6582f0a7b441
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - yellowtank: {fileID: 8726372305248509958, guid: a1c9e81b99e208e459911083d5c84689, type: 3}
+  - redtank: {fileID: 8972754863701220279, guid: e138895dd06d7d44f820a7b419ac98d0, type: 3}
+  - bluetank: {fileID: 5776866967061976775, guid: a937e66c529e828498321d1dc41fc9ec, type: 3}
+  - greentank: {fileID: 1108289138759486843, guid: e2c4e0995bcbee84582e2ea34afb15d6, type: 3}
+  - interactionKey: {instanceID: 0}
+  - leverLight: {instanceID: 0}
+  - leverAnchor: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

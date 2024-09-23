@@ -4,43 +4,49 @@ using System;
 
 public class Node : IComparable {
 	
-	public float f;
-	public float g;
-	public float h;
-	public bool bObstacle;
-	public Node parent;
-	public Vector3 position;
+    public float f;
+    public float g;
+    public float h;
+    public bool bObstacle;
+    public Node parent;
+    public Vector3 position;
+    public bool walkable; // Added walkable property
 
-	public Node() {
-		this.h = 0.0f;
-		this.g = 1.0f;
-		this.f = this.h + this.g;
-		this.bObstacle = false;
-		this.parent = null;
-	}
+    public bool isamong4gates; // Mark whether the node is part of the 4-node opening
+    public bool isTheFourthNode;  // New property for node number 4
 
-	public Node(Vector3 pos) {
-		this.h = 0.0f;
-		this.g = 1.0f;
-		this.f = this.h + this.g;
-		this.bObstacle = false;
-		this.parent = null;
-		this.position = pos;
-	}
+    public Node() {
+        this.h = 0.0f;
+        this.g = 1.0f;
+        this.f = this.h + this.g;
+        this.bObstacle = false;
+        this.walkable = true; // Default value
+        this.parent = null;
+    }
 
-	public void MarkAsObstacle() {
-		this.bObstacle = true;
-	}
+    public Node(Vector3 pos) {
+        this.position = pos;
+        this.h = 0.0f;
+        this.g = 1.0f;
+        this.f = this.h + this.g;
+        this.bObstacle = false;
+        this.walkable = true; // Default value
+        this.parent = null;
+        
+        isamong4gates = false; // Default to false
+        isTheFourthNode = false;  // Initialize as false
+        
+    }
 
-	public int CompareTo(object obj) {
-		Node node = (Node)obj;
-		// Negative value means object comes before this in the sort
-		// order.
-		if (this.h < node.h)
-			return -1;
-		// Positive value means object comes after this in the sort
-		// order.
-		if (this.h > node.h) return 1;
-		return 0;
-	}
+    public void MarkAsObstacle() {
+        this.bObstacle = true;
+        this.walkable = false; // If it's an obstacle, it's not walkable
+    }
+
+    public int CompareTo(object obj) {
+        Node node = (Node)obj;
+        if (this.h < node.h) return -1;
+        if (this.h > node.h) return 1;
+        return 0;
+    }
 }

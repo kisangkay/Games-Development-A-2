@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - RedSphere
+  - YellowSphere
+  - EnemyTank
+  - turret
+  - PatrolPoint
+  - Bullet
+  - CameraTarget
+  - Start
+  - Obstacle
+  - YellowTank
+  - GreenSphere
+  - Terrain
   layers:
   - Default
   - TransparentFX
@@ -11,12 +23,12 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - AllWalls
+  - Terrain
+  - Player
+  - Greensphere
+  - Blue Sphere
+  - YellowSphere
   - 
   - 
   - 

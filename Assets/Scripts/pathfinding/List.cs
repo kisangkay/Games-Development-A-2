@@ -12,6 +12,11 @@ public class List {
 	public bool Contains(object node) {
 		return this.nodes.Contains(node);
 	}
+	public void AddRange(ArrayList arrayList) {
+    foreach (Node node in arrayList) {
+        this.Add(node);
+    }
+}
 	
 	public Node First() {
 		if (this.nodes.Count > 0) {
@@ -19,6 +24,16 @@ public class List {
 		}
 		return null;
 	}
+
+	 public Node Get(int index)
+    {
+        if (index >= 0 && index < nodes.Count)
+        {
+            return (Node)nodes[index];
+        }
+        return null; // Or throw an exception if you prefer
+    }
+	
 	
 	public void Add(Node node) {
 		this.nodes.Add(node);

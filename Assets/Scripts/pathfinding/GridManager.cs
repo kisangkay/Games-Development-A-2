@@ -1,47 +1,50 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class GridManager : MonoBehaviour {
 
-	private static GridManager s_Instance = null;
+    private static GridManager s_Instance = null;
 
-	public static GridManager instance {
-		get {
-			if (s_Instance == null) {
-				s_Instance = FindObjectOfType(typeof(GridManager))
-					as GridManager;
-				if (s_Instance == null)
-					Debug.Log("Could not locate a GridManager " +
-					          "object. \n You have to have exactly " +
-					          "one GridManager in the scene.");
-			}
-			return s_Instance;
-		}
-	}
+    public static GridManager instance {
+        get {
+            if (s_Instance == null) {
+                s_Instance = FindObjectOfType(typeof(GridManager)) as GridManager;
+                if (s_Instance == null)
+                    Debug.Log("Could not locate a GridManager object. You have to have exactly one GridManager in the scene.");
+            }
+            return s_Instance;
+        }
+    }
 
-	public int numOfRows;
-	public int numOfColumns;
-	public float gridCellSize;
-	public bool showGrid = true;
-	public bool showObstacleBlocks = true;
-	public bool allowDiagonal = true;
-	public Color gridColor = Color.blue;
-	public Vector3 origin = new Vector3();
-	// public Vector3 origin
-	List<Vector3> obstacleBlockList;
+    public int numOfRows;
+    public int numOfColumns;
+    public float gridCellSize;
+    public bool showGrid = true;
+    public bool showObstacleBlocks = true;
+    public bool allowDiagonal = true;
+    public Color gridColor = Color.blue;
+    
+    // Make origin public and set to arena's position
+    // public Vector3 origin = new Vector3(749f, 16.74f, 1316.8f); 
+    private Vector3 origin = new Vector3();
+	public Node[] gateNodes = new Node[4];  // Store your four gate nodes
 
-	public Node[,] nodes { get; set; }
+    List<Vector3> obstacleBlockList;
 
+    public Node[,] nodes { get; set; }
 	public Vector3 Origin {
 		get { return origin; }
 	}
 
-	void Awake() {
-		origin = transform.position; 
-		obstacleBlockList = new List<Vector3>();
-		CalculateObstacles();
-	}
+    void Awake() {
+		origin = new Vector3(743.56f, 15.98f, 1286.52f);
+        obstacleBlockList = new List<Vector3>();
+
+  		CalculateObstacles();
+		MarkFourNodeOpening();
+    }
+
 
 	// Find all the obstacles on the map
 	void CalculateObstacles() {
@@ -69,6 +72,28 @@ public class GridManager : MonoBehaviour {
 			}
 		}
 	}
+
+	void MarkFourNodeOpening()
+    {
+     //positions for the 4 arena gates
+        gateNodes[0] = nodes[22, 20];//row col
+    	gateNodes[1] = nodes[22, 26];
+    	gateNodes[2] = nodes[22, 35];
+    	gateNodes[3] = nodes[22, 44];
+
+        // Mark these nodes as part of the 4-node opening
+        gateNodes[0].isamong4gates = true;
+        gateNodes[1].isamong4gates = true;
+        gateNodes[2].isamong4gates = true;
+        gateNodes[3].isamong4gates = true;
+
+		gateNodes[0].walkable = true;  // Ensure they are walkable
+    	gateNodes[1].walkable = true;
+    	gateNodes[2].walkable = true;
+    	gateNodes[3].walkable = true;
+
+		gateNodes[3].isTheFourthNode = true;  // New property to identify the 4th node
+    }
 
 	public Vector3 GetGridCellCenter(int index) {
 		Vector3 cellPosition = GetGridCellPosition(index);
@@ -161,24 +186,62 @@ public class GridManager : MonoBehaviour {
 				}
 			}
 		}
+		// Debug
+		 if (nodes != null) {
+        Gizmos.color = Color.red;
+        for (int i = 0; i < numOfRows; i++) {
+            for (int j = 0; j < numOfColumns; j++) {
+                if (nodes[j, i].bObstacle) {
+                    Gizmos.color = Color.red;
+                } else {
+                    Gizmos.color = Color.green;
+                }
+                Gizmos.DrawCube(nodes[j, i].position, Vector3.one * 0.5f);
+            }
+        }
+    }
+	
 	}
 
-	public void DebugDrawGrid(Vector3 origin, int numRows, int numCols,float cellSize, Color color) {
-		float width = (numCols * cellSize);
-		float height = (numRows * cellSize);
-		// Draw the horizontal grid lines
-		for (int i = 0; i < numRows + 1; i++) {
-			Vector3 startPos = new Vector3(0.0f, 0.05f, 0.0f) + i * cellSize * new Vector3(0.0f, 0.0f, 1.0f);
-			Vector3 endPos = startPos + width * new Vector3(1.0f, 0.0f, 0.0f);
-			Debug.DrawLine(startPos, endPos, color);
-		}
+	public void DebugDrawGrid(Vector3 origin, int numRows, int numCols, float cellSize, Color color) {
+    float width = numCols * cellSize;
+    float height = numRows * cellSize;
 
-		// Draw the vertial grid lines
-		for (int i = 0; i < numCols + 1; i++) {
-			Vector3 startPos = new Vector3(0.0f, 0.05f, 0.0f) + i * cellSize * new Vector3(1.0f, 0.0f, 0.0f);
-			Vector3 endPos = startPos + height * new Vector3(0.0f, 0.0f, 1.0f);
-			Debug.DrawLine(startPos, endPos, color);
-		}
-	}	
+    // Draw the horizontal grid lines
+    for (int i = 0; i <= numRows; i++) {
+        Vector3 startPos = origin + new Vector3(0.0f, 0.05f, i * cellSize);
+        Vector3 endPos = startPos + new Vector3(width, 0.0f, 0.0f);
+        Debug.DrawLine(startPos, endPos, color);
+    }
+
+    // Draw the vertical grid lines
+    for (int i = 0; i <= numCols; i++) {
+        Vector3 startPos = origin + new Vector3(i * cellSize, 0.05f, 0.0f);
+        Vector3 endPos = startPos + new Vector3(0.0f, 0.0f, height);
+        Debug.DrawLine(startPos, endPos, color);
+    }
+}
+
+
+	public Node NodeFromWorldPoint(Vector3 worldPosition) {
+     // Check if the position is within bounds
+    if (!IsInBounds(worldPosition)) {
+        Debug.Log("Position is out of bounds: " + worldPosition);  // Debug message
+        return null; // Return null if out of bounds
+    }
+    
+    // Calculate the index based on the world position
+    int index = GetGridIndex(worldPosition);
+    
+    if(index == -1) {
+        Debug.Log("Invalid grid index for world position: " + worldPosition);  // Debug message
+        return null; // Invalid index, return null
+    }
+    
+    // Return the corresponding node from the grid
+    return nodes[GetColumn(index), GetRow(index)];
+
+}
+
 }
 
