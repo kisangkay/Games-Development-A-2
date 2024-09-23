@@ -1,123 +1,115 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-public class AStar {
+public class AStar 
+{
+    public static List closedList, openList;
 
-	public static List closedList, openList;
+    private static float CalculateEuclideanCost(Node startNode, Node endNode) 
+    {
+        Vector3 vecCost = startNode.position - endNode.position;
+        return vecCost.magnitude;
+    }
 
-	private static float CalculateEuclideanCost(Node startNode, Node endNode) {
-		// find vector between positions
-		Vector3 vecCost = startNode.position - endNode.position;
-		// return the magnitude
-		return vecCost.magnitude;
-	}
+    public static ArrayList FindPath(Node start, Node goal) 
+    {
+        if (start == null || goal == null)
+    {
+        Debug.LogError("Start or Goal node is null. Check if the positions are within the grid bounds");
+        return null;
+    }
+        // Initialize closed and open lists
+        closedList = new List();
+        openList = new List();
 
+        // A. Add the start node to the open list
+        openList.Add(start);
 
-	public static ArrayList FindPath(Node start, Node goal) {
+        // B. Calculate h, g, and f of start node
+        Debug.Log("Start Node: " + start);
+        Debug.Log("Goal Node: " + goal);
 
-		// create the closed list of nodes, initially empty
-		closedList = new List();
+        start.g = 0.0f;
+        start.h = CalculateEuclideanCost(start, goal);
+        start.f = start.g + start.h;
 
-		// create the open list of nodes
-		openList = new List();
+        Node currentNode = null;
 
-		// A. add the start node to the open list
-		openList.Add(start);
-	    
+        // While there are nodes to process
+        while (openList.Length != 0) 
+        {
+            // C. Consider the best node in the open list (node with lowest f)
+            currentNode = openList.First(); // Use your custom First() method
+            for (int i = 1; i < openList.Length; i++)
+            {
+                Node candidate = openList.Get(i);
+                if (candidate.f < currentNode.f || (candidate.f == currentNode.f && candidate.h < currentNode.h))
+                {
+                    currentNode = candidate;
+                }
+            }
 
-		// B. Calculate h, g and f of start square/node
-		// g value is the movement cost along the path to the start node.
-		start.g = 0.0f;
-		//h value is distance from the start box A to B as the destination
-		//for the h value, heuristic, we will use the Euclidean distance returned by a function 
-		start.h = CalculateEuclideanCost(start,goal);
-		//f = g+h
-		start.f = start.h + start.g;
+            // If the current node is the goal, we've found the path
+            if (currentNode.position == goal.position) 
+            {
+                return CalculatePath(currentNode);
+            }
 
+            // D. Move the current node to the closed list and remove from open list
+            closedList.Add(currentNode);
+            openList.Remove(currentNode);
 
-	
-	    
-		Node currentNode = null;
+            // Get all neighbors of the current node
+            ArrayList neighbours = new ArrayList();
+            GridManager.instance.GetNeighbours(currentNode, neighbours);
 
-		// while (we have not reached our goal (openList.Length != 0))
-		while (openList.Length != 0) {
+            // Iterate through each neighbor
+            foreach (Node neighbourNode in neighbours) 
+            {
+                // If the neighbor is not walkable or already in closed list, skip
+                if (!neighbourNode.walkable || closedList.Contains(neighbourNode)) 
+                {
+                    continue;
+                }
 
-			// C. consider the best node in the open list (the node with the lowest f value) - call it the current node
+                // Calculate new movement cost to neighbor
+                float newMovementCostToNeighbour = currentNode.g + CalculateEuclideanCost(currentNode, neighbourNode);
 
-		    
-            
-			// if the current node is the goal then we're done
-			if (currentNode.position == goal.position) {
-				return CalculatePath(currentNode);
-			}
+                // If the new path to neighbour is shorter or neighbour not in open list
+                if (newMovementCostToNeighbour < neighbourNode.g || !openList.Contains(neighbourNode)) 
+                {
+                    // E. Set parent to current node
+                    neighbourNode.parent = currentNode;
 
-			// D. Move the current node to the closed list (& remove it from the open list)
-            
+                    // F. Update g, h, and f costs
+                    neighbourNode.g = newMovementCostToNeighbour;
+                    neighbourNode.h = CalculateEuclideanCost(neighbourNode, goal);
+                    neighbourNode.f = neighbourNode.g + neighbourNode.h;
 
-			// get all of the current nodes neighbors
-			ArrayList neighbours = new ArrayList();
-			GridManager.instance.GetNeighbours(currentNode, neighbours);
-	
-			// for each neighbor node
-			for (int i = 0; i < neighbours.Count; i++) {
-				
-				Node neighbourNode = (Node)neighbours[i];
+                    // G. Add neighbour to open list if not already there
+                    if (!openList.Contains(neighbourNode)) 
+                    {
+                        openList.Add(neighbourNode);
+                    }
+                }
+            }
+        }
 
-				// if the neighbour node is in the closed list then ignore it (continue)
-				if (closedList.Contains(neighbourNode)) {
-					continue;
-				}
+        // If we exit the loop without finding the goal
+        Debug.LogError("Goal Not Found");
+        return null;
+    }
 
-				// if the neighbour node is not on the open list add it
-				if (!openList.Contains(neighbourNode)) {
-					// E. Set the parent of the neighbour node to be the current node
-				    
-
-				    // F. Calculate g, h and f of neighbourNode
-				    
-                    
-				    // G. Add neighbourNode to open list
-                    
-				}
-				// if it's already on the open list, check to see if this path to the node is better
-				else {
-
-					float gTentative = 0f;
-
-					// H. calculate what the g value would be if we go through the current node
-				    
-
-					// if the path is shorter
-					if (gTentative < neighbourNode.g) {
-                        // I. set the parent of neighbourNode to be the currentNode
-					    
-
-                        // J. Set g value of neighbourNode to gTentative, recalculate h and f for neighbourNode
-                        
-                        
-                        // sort the list to put best f value at start
-                        openList.Sort();
-					}
-				}
-			}
-		}
-
-		if ((currentNode == null) || (currentNode.position != goal.position)) {
-			Debug.LogError("Goal Not Found");
-			return null;
-		}
-
-		return CalculatePath(currentNode);
-	}
-	
-
-	private static ArrayList CalculatePath(Node node) {
-		ArrayList list = new ArrayList();
-		while (node != null) {
-			list.Add(node);
-			node = node.parent;
-		}
-		list.Reverse();
-		return list;
-	}
+    private static ArrayList CalculatePath(Node node) 
+    {
+        ArrayList path = new ArrayList();
+        Node currentNode = node;
+        while (currentNode != null) 
+        {
+            path.Add(currentNode);
+            currentNode = currentNode.parent;
+        }
+        path.Reverse();
+        return path;
+    }
 }

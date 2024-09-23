@@ -5,9 +5,22 @@ using UnityEngine;
 
 public class Lever : MonoBehaviour
 {
-    // Remove this!!
-    public GameObject tank;
-
+    public enum coloroftanks
+    {
+        Yellow,
+        Red,
+        Green,
+        Blue
+    }
+    public redtank redtank;
+    // public GameObject yellowtank;
+    public yellowtank yellowtank;
+    // public GameObject yellowtank;
+    public Bluetank bluetank;
+    // public GameObject greentank;
+    public Greentank greentank;
+    public coloroftanks leverForTank;
+    
     public GameObject interactionKey;
     public GameObject leverLight;
     public Transform leverAnchor;
@@ -39,23 +52,71 @@ public class Lever : MonoBehaviour
         leverRenderer = leverLight.GetComponent<Renderer>();
         leverRenderer.material.color = leverColour;
         startRotation = transform.rotation;
+
+        switch (leverForTank)
+        {
+            case coloroftanks.Red:
+                leverColour = Color.red;
+                break;
+            case coloroftanks.Yellow:
+                leverColour = Color.yellow; 
+                break;
+            case coloroftanks.Green:
+                leverColour = Color.green;
+                break;
+            case coloroftanks.Blue:
+                leverColour = Color.blue;
+                break;
+        }
     }
 
     public void ToggleLever()
     {
-        isActivated = !isActivated;
+        isActivated = !isActivated;//setting to deactivate
         
-        if (isActivated)
+        if (isActivated) //if lever pulled
         {
-            leverColour = Color.green;
-            // You can add code here to trigger your AI - Turn on
+            leverColour = Color.green; //indic is active
 
+            switch (leverForTank)
+            {
+                case coloroftanks.Red:
+                    redtank.GetComponent<redtank>().curState = redtank.redtankstate.Patrol;
+                    break;
+                case coloroftanks.Yellow:
+                    yellowtank.GetComponent<yellowtank>().curState = yellowtank.YellowTankState.Active;
+                    break;
+                case coloroftanks.Green:
+                    greentank.GetComponent<Greentank>().curState = Greentank.Greentankstate.Active;
+                    break;
+                case coloroftanks.Blue:
+                    bluetank.GetComponent<Bluetank>().curState = Bluetank.Bluetankstate.Active;
+                    break;
+            }
 
-        } else
+        } 
+        else
         {
-            leverColour = Color.red;
+            leverColour = Color.red; // Change color to indicate it's deactivated
+
+            switch (leverForTank)
+            {
+                case coloroftanks.Red:
+                    redtank.GetComponent<redtank>().curState = redtank.redtankstate.Inactive;
+                    break;
+                case coloroftanks.Yellow:
+                    yellowtank.GetComponent<yellowtank>().curState = yellowtank.YellowTankState.Inactive;
+                    break;
+                case coloroftanks.Green:
+                    greentank.GetComponent<Greentank>().curState = Greentank.Greentankstate.Inactive;
+                    break;
+                case coloroftanks.Blue:
+                    bluetank.GetComponent<Bluetank>().curState = Bluetank.Bluetankstate.Inactive;
+                    break;
+            }
             // You can add code here to trigger your AI - Turn off
 
+            // yellowtank.GetComponent<yellowtank>().curState = yellowtank.YellowTankState.Inactive;
 
         }
 

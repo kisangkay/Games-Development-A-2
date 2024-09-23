@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 1a136a49eae16284bbbb244f7ff0c37d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - redball: {fileID: 6697763439513281030, guid: 3631a295387187c49bdacc78acd6470f, type: 3}
+  - yellowball: {fileID: 6657299237991778651, guid: 14716e014d6e3a34baa046d65d8647ec, type: 3}
+  - holdPosition: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
