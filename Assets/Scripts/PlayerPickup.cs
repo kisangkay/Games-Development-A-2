@@ -31,19 +31,18 @@ public class PlayerPickup : MonoBehaviour
     }
 
     void PickupObject(GameObject obj)
-    {
-        heldObject = obj;
-        obj.transform.position = holdPosition.position;
-        obj.transform.parent = holdPosition;
-        
-        Rigidbody rb = obj.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = true; // Disable physics while holding
-        }
+{
+    heldObject = obj;
+    obj.transform.position = holdPosition.position;
+    obj.transform.parent = holdPosition;
 
-        // Optional: Add visual feedback, e.g., change object color or display UI
+    Rigidbody rb = obj.GetComponent<Rigidbody>();
+    if (rb != null)
+    {
+        rb.isKinematic = true; // Disable physics while holding
     }
+}
+
 
     void ThrowObject()
     {
